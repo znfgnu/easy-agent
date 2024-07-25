@@ -12,7 +12,8 @@
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src/:$$PYTHONPATH"
-            }
+            },
+            "justMyCode": false
         }
     ]
 }
