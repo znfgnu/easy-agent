@@ -4,39 +4,24 @@ import json
 import os
 import tempfile
 
-import ollama
-
-from mappers.toolmap import map_function_to_ollama_tool_dict
-from tools.today import now
+from easyagent import EasyAgent
 from tools.demo import demo_function, send_email
+from tools.today import now
 
 def benchmark(model, tools, task):
   tool_calls_counter = 0
   total_counter = 0
   assess = call_check[task]
-  samples = []
+
+  ea = EasyAgent(model=model, tools=tools, system=None)
 
   with tempfile.NamedTemporaryFile("w", dir="./reports/", delete=False) as f:
     try:
       w = csv.DictWriter(f, fieldnames=("tool_calls_counter", "total_counter", "success_rate", "message"))
       w.writeheader()
       for i in range(10000):
-        response = ollama.chat(
-            model=model,
-            messages=[
-                # {
-                #     'role': 'system',
-                #     'content': 'You are a helpful AI assistant. Call functions to achieve user\'s happiness.'
-                # },
-                {
-                  'role': 'user',
-                  'content': predef_msgs[task],
-                },
-            ],
-            tools=[map_function_to_ollama_tool_dict(fn) for fn in tools],
-        )
+        msg = ea.tick(prompt=predefined_msgs[task], remember_response=False, remember_request=False)
 
-        msg = response["message"]
         tool_calls = [call['function'] for call in msg.get("tool_calls", [])]
         if len(tool_calls) > 0 and assess(tool_calls):
           tool_calls_counter += 1
@@ -54,7 +39,7 @@ def benchmark(model, tools, task):
     finally:
         filename = ''.join([
           "reports/"
-          f"{model}_{datetime.datetime.now().isoformat()[2:-7]}_{task}_",
+          f"{datetime.datetime.now().isoformat()[2:-7]}_{model}_{task}_",
           f'{"D" if demo_function in tools else "" }',
           f'{"N" if now in tools else "" }',
           f'{"S" if send_email in tools else "" }_',
@@ -63,7 +48,7 @@ def benchmark(model, tools, task):
         os.rename(f.name, filename)
 
 
-predef_msgs = {
+predefined_msgs = {
   'email': 'Send an email to asd@sdf.pl with invitation to my party',
   'now': 'What is the date today?',
 }

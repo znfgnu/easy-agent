@@ -16,7 +16,7 @@
             "justMyCode": false
         },
         {
-            "name": "Benchmark",
+            "name": "Launcher: Benchmark",
             "type": "debugpy",
             "request": "launch",
             "program": "src/launchers/benchmark.py",
