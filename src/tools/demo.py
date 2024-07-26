@@ -9,7 +9,7 @@ from args_description import describe_args
         d="optional: another number",
         e="optional: another int",
 )
-def demofunction(
+def demo_function(
         a: int,
         b: str,
         c: bool,

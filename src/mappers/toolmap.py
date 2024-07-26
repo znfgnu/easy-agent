@@ -13,6 +13,6 @@ def map_function_to_ollama_tool_dict(fn: Callable) -> str:
 
 
 if __name__ == "__main__":
-    from tools.demo import demofunction
-    d = map_function_to_ollama_tool_dict(demofunction)
+    from tools.demo import demo_function
+    d = map_function_to_ollama_tool_dict(demo_function)
     print(d)

@@ -8,7 +8,7 @@ import ollama
 
 from mappers.toolmap import map_function_to_ollama_tool_dict
 from tools.today import now
-from tools.demo import demofunction, send_email
+from tools.demo import demo_function, send_email
 
 def benchmark(model, tools, task):
   tool_calls_counter = 0
@@ -55,7 +55,7 @@ def benchmark(model, tools, task):
         filename = ''.join([
           "reports/"
           f"{model}_{datetime.datetime.now().isoformat()[2:-7]}_{task}_",
-          f'{"D" if demofunction in tools else "" }',
+          f'{"D" if demo_function in tools else "" }',
           f'{"N" if now in tools else "" }',
           f'{"S" if send_email in tools else "" }_',
           f"{success_rate:.0f}sr_{total_counter}total.csv",
@@ -86,6 +86,6 @@ if __name__ == "__main__":
 
   benchmark(
     model=llama31,
-    tools=(demofunction, now, send_email),
+    tools=(demo_function, now, send_email),
     task='email',
   )
