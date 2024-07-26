@@ -5,7 +5,9 @@ Ollama tool calling agent framework.
 
 Using this framework you can run a single agent with lightweight tools framework.
 
-# WIP Usage:
+[Ollama: Tool support (blogpost)](https://ollama.com/blog/tool-support)
+
+# Usage:
 ```python
 import datetime
 from args_description import describe_args
