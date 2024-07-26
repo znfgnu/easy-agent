@@ -20,8 +20,11 @@ ea = EasyAgent(
     tools=[now],
     system=None,
 )
-ea.tick("What is the date today?")
 
+ea.ask("What is the date today?")
+# 'The current date is July 26, 2024.'
+
+ea.tick("What is the date today?")
 # {'content': '',
 #  'role': 'assistant',
 #  'tool_calls': [{'function': {'arguments': {}, 'name': 'now'}}]}

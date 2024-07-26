@@ -7,4 +7,6 @@ ea = EasyAgent(
     tools=[now],
     system=None,
 )
-pprint(ea.tick("What is the date today?"))
+
+response = ea.ask("What is the date today?")
+pprint(response)

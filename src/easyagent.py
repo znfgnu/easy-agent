@@ -9,16 +9,36 @@ class EasyAgent:
         self.context = []
 
     @property
-    def _tools_dict(self):
+    def _tools_ollama_list(self):
         return [map_function_to_ollama_tool_dict(fn) for fn in self.tools]
+
+    @property
+    def _tools_map(self):
+        return {fn.__name__: fn for fn in self.tools}
 
     @property
     def _system_messages(self):
         return [{'role': 'system', 'content': self.system}] if self.system is not None else []
 
     @property
-    def _messages(self):
+    def _prompt_messages(self):
+        """System message with memory context."""
         return self._system_messages + self.context
+
+    def call_tool(
+            self,
+            name: str,
+            arguments: dict[str],
+            remember_response: bool = True
+        ):
+        fn = self._tools_map[name]
+        result = fn(**arguments)
+        if remember_response:
+            self.context.append({
+                'role': 'tool',
+                'content': result
+            })
+        return result
 
     def tick(
             self,
@@ -28,17 +48,29 @@ class EasyAgent:
             ):
         """Call LLM once."""
 
-        prompt_messages = [{'role': 'user', 'content': prompt}] if prompt is not None else []
+        volatile_mem_messages = [{'role': 'user', 'content': prompt}] if prompt is not None else []
         response = ollama.chat(
             model=self.model,
-            messages=self._messages + prompt_messages,
-            tools=self._tools_dict,
+            messages=self._prompt_messages + volatile_mem_messages,
+            tools=self._tools_ollama_list,
         )
         msg = response["message"]
 
         if remember_request:
-            self.context.extend(prompt_messages)
+            self.context.extend(volatile_mem_messages)
         if remember_response:
             self.context.append(msg)
 
         return msg
+
+    def ask(self, question: str) -> str:
+        response = self.tick(prompt=question)
+        while True:
+            if 'tool_calls' in response:
+                for call in response['tool_calls']:
+                    self.call_tool(**call['function'])
+            else:
+                break
+            response = self.tick()
+        
+        return response['content']
