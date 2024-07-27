@@ -7,7 +7,7 @@ Using this framework you can run a single agent with lightweight tools framework
 
 [Ollama: Tool support (blogpost)](https://ollama.com/blog/tool-support)
 
-# Usage:
+# Usage
 ```python
 import datetime
 from args_description import describe_args
@@ -31,4 +31,13 @@ ea.tick("What is the date today?")
 #  'role': 'assistant',
 #  'tool_calls': [{'function': {'arguments': {}, 'name': 'now'}}]}
 
+```
+
+# Installation
+
+```shell
+python3 -m venv ./venv
+source ./venv/bin/activate
+pip install -r requirements.txt
+python3 ./src/launchers/hello.py
 ```
