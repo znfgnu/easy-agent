@@ -41,3 +41,14 @@ source ./venv/bin/activate
 pip install -r requirements.txt
 python3 ./src/launchers/hello.py
 ```
+
+# Calendar agent (WIP)
+
+To test calendar features:
+- Configure Google Calendar Simple API credentials following [Getting started guide: Credentials](https://google-calendar-simple-api.readthedocs.io/en/latest/getting_started.html#credentials).
+    - Additionally, I added my email as a test user for given OAuth consent screen in GCP panel. I'm not sure if it's needed but it works for me.
+- Update your email in `src/launchers/assistant.py`
+- Run `src/launchers/assistant.py`
+    - By the first run web browser with consent screen should appear. Give consent, enjoy working code.
+
+The code is messy but it was meant to be a tech demo atm.

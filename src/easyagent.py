@@ -1,11 +1,15 @@
 import ollama
 from mappers.toolmap import map_function_to_ollama_tool_dict
+import logging
+
+logger = logging.getLogger(__name__)
 
 class EasyAgent:
-    def __init__(self, model, tools, system) -> None:
+    def __init__(self, model, tools, system, options: ollama.Options | None = None) -> None:
         self.model = model
         self.tools = tools
         self.system = system
+        self.options = options
         self.context = []
 
     @property
@@ -31,8 +35,10 @@ class EasyAgent:
             arguments: dict[str],
             remember_response: bool = True
         ):
+        logger.debug("Calling tool: %s(%s)", name, arguments)
         fn = self._tools_map[name]
         result = fn(**arguments)
+        logger.debug("Tool result: %s", result)
         if remember_response:
             self.context.append({
                 'role': 'tool',
@@ -53,8 +59,10 @@ class EasyAgent:
             model=self.model,
             messages=self._prompt_messages + volatile_mem_messages,
             tools=self._tools_ollama_list,
+            options=self.options
         )
         msg = response["message"]
+        logger.debug("LLM response: %s", msg)
 
         if remember_request:
             self.context.extend(volatile_mem_messages)
@@ -64,6 +72,7 @@ class EasyAgent:
         return msg
 
     def ask(self, question: str) -> str:
+        logger.debug("Asking: %s", question)
         response = self.tick(prompt=question)
         while True:
             if 'tool_calls' in response:
